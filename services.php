@@ -1,0 +1,15 @@
+<?php
+require __DIR__ . '/includes/bootstrap.php';
+$meta = page_meta('Services', 'Explore residential, commercial, infrastructure, renovation, interior and project management services from J & S Constructions.');
+$services = db()->query("SELECT * FROM services WHERE is_active=1 ORDER BY sort_order, id")->fetchAll();
+require __DIR__ . '/includes/header.php';
+?>
+<main>
+<section class="page-hero py-24 text-white">
+  <img src="<?= upload_url('library/project-commercial-building.jpg') ?>" alt="J & S Constructions services">
+  <div class="container-shell relative z-10"><span class="section-kicker !text-blue-300">Our Services</span><h1 class="mt-5 max-w-4xl font-display text-5xl font-bold uppercase leading-tight sm:text-7xl">From First Sketch To Final Handover</h1><p class="mt-6 max-w-2xl text-lg leading-8 text-slate-300">Integrated construction support designed to make your project clearer, safer and easier to manage.</p></div>
+</section>
+<section class="py-24"><div class="container-shell grid gap-8 lg:grid-cols-2"><?php foreach ($services as $index=>$service): $highlights = service_highlights($service['title']); ?><article id="service-<?= (int)$service['id'] ?>" class="card-lift reveal overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-5 sm:p-6"><div class="service-thumb"><img src="<?= service_image($service['title']) ?>" alt="<?= e($service['title']) ?>"><span class="service-icon-badge"><i data-lucide="<?= e($service['icon'] ?: 'building-2') ?>" class="h-6 w-6"></i></span></div><div class="mt-5 flex flex-wrap gap-2"><span class="service-chip">Quality Execution</span><span class="service-chip">Professional Support</span></div><div class="mt-6 flex items-start justify-between gap-6"><div><h2 class="font-display text-3xl font-bold uppercase text-brand-950"><?= e($service['title']) ?></h2><p class="mt-4 leading-8 text-slate-600"><?= nl2br(e($service['description'])) ?></p><ul class="service-highlight-list"><?php foreach($highlights as $point): ?><li><i data-lucide="check-circle-2" class="h-4 w-4"></i><span><?= e($point) ?></span></li><?php endforeach; ?></ul></div><span class="font-display text-5xl font-bold text-slate-100"><?= str_pad((string)($index+1),2,'0',STR_PAD_LEFT) ?></span></div><a href="<?= url('quotation.php?service=' . urlencode($service['title'])) ?>" class="mt-7 inline-flex items-center gap-2 font-extrabold text-brand-700">Discuss this service <i data-lucide="arrow-right" class="h-5 w-5"></i></a></article><?php endforeach; ?></div></section>
+<section class="container-shell"><div class="blueprint rounded-[2rem] px-7 py-14 text-white sm:px-12 lg:flex lg:items-center lg:justify-between"><div><p class="text-xs font-extrabold uppercase tracking-[.2em] text-blue-300">Custom Requirements Welcome</p><h2 class="mt-3 font-display text-4xl font-bold uppercase">Your Project May Need A Tailored Approach</h2></div><a href="<?= url('contact.php') ?>" class="mt-7 inline-flex rounded-2xl bg-white px-7 py-4 font-extrabold text-brand-950 lg:mt-0">Talk to Our Team</a></div></section>
+</main>
+<?php require __DIR__ . '/includes/footer.php'; ?>

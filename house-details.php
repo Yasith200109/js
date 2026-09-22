@@ -1,0 +1,13 @@
+<?php
+require __DIR__ . '/includes/bootstrap.php';
+$slug=trim($_GET['slug']??'');
+$stmt=db()->prepare("SELECT * FROM house_designs WHERE slug=? AND status='published' LIMIT 1");$stmt->execute([$slug]);$house=$stmt->fetch();
+if(!$house){http_response_code(404);require __DIR__.'/404.php';exit;}
+$meta=page_meta($house['title'],excerpt($house['description'],155));
+require __DIR__ . '/includes/header.php';
+?>
+<main>
+<section class="bg-slate-50 py-16"><div class="container-shell"><div class="grid items-center gap-12 lg:grid-cols-2"><div><span class="section-kicker"><?= e($house['category']) ?></span><h1 class="mt-5 font-display text-5xl font-bold uppercase text-brand-950 sm:text-7xl"><?= e($house['title']) ?></h1><p class="mt-6 text-lg leading-8 text-slate-600"><?= e(excerpt($house['description'],240)) ?></p><a href="<?= url('quotation.php?design='.urlencode($house['title'])) ?>" class="mt-8 inline-flex rounded-2xl bg-brand-700 px-7 py-4 font-extrabold text-white">Request This Design</a></div><img src="<?= upload_url($house['image']) ?>" alt="<?= e($house['title']) ?>" class="aspect-[4/3] w-full rounded-[2rem] object-cover shadow-2xl"></div></div></section>
+<section class="py-20"><div class="container-shell grid gap-12 lg:grid-cols-[1fr_360px]"><article><span class="section-kicker">Design Description</span><h2 class="mt-5 font-display text-4xl font-bold uppercase text-brand-950">A Flexible Starting Point For Your Home</h2><div class="prose-content mt-7"><?= nl2br(e($house['description'])) ?></div><div class="mt-10 rounded-3xl bg-brand-50 p-7"><h3 class="text-lg font-extrabold text-brand-950">Customization Notice</h3><p class="mt-2 leading-7 text-slate-600">This concept can be adapted to suit your land dimensions, local authority requirements, room preferences and budget. Final cost is determined after consultation and site review.</p></div></article><aside><div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm"><h3 class="font-display text-2xl font-bold uppercase text-brand-950">Design Details</h3><dl class="mt-6 grid gap-5 text-sm"><?php foreach([['Bedrooms',$house['bedrooms']],['Bathrooms',$house['bathrooms']],['Floors',$house['floors']],['Floor Area',number_format((float)$house['area_sqft']).' sq.ft.'],['Suggested Land',$house['land_size'] ?: 'Custom'],['Estimated Range',$house['estimated_cost'] ?: 'On request']] as $row): ?><div class="flex justify-between gap-4 border-b border-slate-100 pb-4"><dt class="font-bold text-slate-500"><?= e($row[0]) ?></dt><dd class="text-right font-extrabold text-brand-950"><?= e($row[1]) ?></dd></div><?php endforeach; ?></dl></div></aside></div></section>
+</main>
+<?php require __DIR__ . '/includes/footer.php'; ?>
